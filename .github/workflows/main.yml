@@ -1,15 +1,27 @@
+
 name: Deploy Callmex Live
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: Ambil kode website
+        uses: actions/checkout@v4
+
+      - name: Siapkan Node.js
+        uses: actions/setup-node@v4
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CALLMEX_LIVE }}
-          channelId: live
-          projectId: callmex-live
+          node-version: 22
+
+      - name: Pasang Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy ke Firebase Hosting
+        run: firebase deploy --only hosting --project callmex-live --token "$FIREBASE_TOKEN"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
